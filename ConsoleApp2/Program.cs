@@ -11,10 +11,11 @@ namespace ConsoleApp2
 {
     class Program
     {
-        class Matrix: IComparable<Matrix>
+        class Matrix : IComparable<Matrix>
         {
             public double[,] matrix;
-            private string string_interpr;
+
+            public double Determinant => matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0];
 
             public Matrix(double[,] matrix)
             {
@@ -45,7 +46,7 @@ namespace ConsoleApp2
                     {
                         throw new Exception("Index out of range!");
                     }
-                    
+
                 }
                 set
                 {
@@ -60,20 +61,17 @@ namespace ConsoleApp2
                 }
             }
 
-            public double Determinant() => this.matrix[0, 0] * this.matrix[1, 1] - this.matrix[0, 1] * this.matrix[1, 0];
-
             public Matrix InverseMatrix()
             {
-                Matrix inverse_matrix = new Matrix(new double[2,2]);
-                double det = this.matrix[0, 0] * this.matrix[1, 1] - this.matrix[0, 1] * this.matrix[1, 0];
+                Matrix inverse_matrix = new Matrix(new double[2, 2]);
 
-                if (det != 0)
+                if (this.Determinant != 0)
                 {
                     for (int i = 0; i < 2; i++)
                     {
                         for (int j = 0; j < 2; j++)
                         {
-                            inverse_matrix[j, i] = this.matrix[i, j] / det;
+                            inverse_matrix[j, i] = this.matrix[i, j] / this.Determinant;
                         }
                     }
 
@@ -81,66 +79,59 @@ namespace ConsoleApp2
 
 
                 }
+
                 throw new Exception("Determinant is zero!");
 
             }
 
             public override string ToString()
             {
-                this.string_interpr = "";
+                string result = "";
                 for (int i = 0; i < 2; i++)
                 {
                     for (int j = 0; j < 2; j++)
                     {
                         if (j == 0)
                         {
-                            this.string_interpr += this.matrix[i, j];
+                            result += this.matrix[i, j];
                         }
                         else
                         {
-                            this.string_interpr += " " + this.matrix[i, j];
+                            result += " " + this.matrix[i, j];
                         }
-                        
+
 
                     }
 
                     if (i != 1)
                     {
-                        this.string_interpr += '\n';
+                        result += '\n';
                     }
 
-                    
+
                 }
 
-                return this.string_interpr;
+                return result;
             }
 
             public static Matrix Parse(string str)
             {
-                Matrix matrix = new Matrix(new double[2,2]);
-                string[] rows = str.Split("\n");
-                if (TryParse(str, out matrix))
+                Matrix matrix = new Matrix(new double[2, 2]);
+                if (!TryParse(str, out matrix))
                 {
-                    for (int i = 0; i < rows.Length; i ++)
-                    {
-                        string[] coloumns = rows[i].Split(" ");
-                        for (int j = 0; j < coloumns.Length; j ++)
-                        {
-                            matrix[i, j] = Double.Parse(coloumns[j]);
-                        
-                        }
-                    }
+                    throw new Exception("String is invalid for parse to matrix!");
 
-                    return matrix;
                 }
 
-                throw new Exception("String is invalid for parse to matrix!");
+                return matrix;
+
+
 
             }
 
             public static bool TryParse(string str, out Matrix matrix)
             {
-                matrix = new Matrix(new double[2,2]);
+                matrix = new Matrix(new double[2, 2]);
                 string[] rows = str.Split("\n");
                 if (rows.Length != 2)
                 {
@@ -162,18 +153,18 @@ namespace ConsoleApp2
                         {
                             return false;
                         }
-                        
+
                     }
 
                 }
 
-                for (int i = 0; i < rows.Length; i ++)
+                for (int i = 0; i < rows.Length; i++)
                 {
                     string[] coloumns = rows[i].Split(" ");
-                    for (int j = 0; j < coloumns.Length; j ++)
+                    for (int j = 0; j < coloumns.Length; j++)
                     {
                         matrix[i, j] = Double.Parse(coloumns[j]);
-                        
+
                     }
                 }
 
@@ -182,7 +173,7 @@ namespace ConsoleApp2
 
             public static Matrix operator -(Matrix m1, Matrix m2)
             {
-                Matrix matrix = new Matrix(new double[2,2]);
+                Matrix matrix = new Matrix(new double[2, 2]);
                 for (int i = 0; i < 2; i++)
                 {
                     for (int j = 0; j < 2; j++)
@@ -193,10 +184,10 @@ namespace ConsoleApp2
 
                 return matrix;
             }
-            
+
             public static Matrix operator +(Matrix m1, Matrix m2)
             {
-                Matrix matrix = new Matrix(new double[2,2]);
+                Matrix matrix = new Matrix(new double[2, 2]);
                 for (int i = 0; i < 2; i++)
                 {
                     for (int j = 0; j < 2; j++)
@@ -207,10 +198,10 @@ namespace ConsoleApp2
 
                 return matrix;
             }
-            
+
             public static Matrix operator ++(Matrix m1)
             {
-                Matrix matrix = new Matrix(new double[2,2]);
+                Matrix matrix = new Matrix(new double[2, 2]);
                 for (int i = 0; i < 2; i++)
                 {
                     for (int j = 0; j < 2; j++)
@@ -221,10 +212,10 @@ namespace ConsoleApp2
 
                 return matrix;
             }
-            
+
             public static Matrix operator --(Matrix m1)
             {
-                Matrix matrix = new Matrix(new double[2,2]);
+                Matrix matrix = new Matrix(new double[2, 2]);
                 for (int i = 0; i < 2; i++)
                 {
                     for (int j = 0; j < 2; j++)
@@ -235,42 +226,42 @@ namespace ConsoleApp2
 
                 return matrix;
             }
-            
-            
+
+
             public static bool operator >(Matrix m1, Matrix m2)
             {
-                return m1.Determinant() > m2.Determinant();
+                return m1.Determinant > m2.Determinant;
             }
-            
+
             public static bool operator <(Matrix m1, Matrix m2)
             {
-                return m1.Determinant() < m2.Determinant();
+                return m1.Determinant < m2.Determinant;
             }
-            
+
             public static bool operator >=(Matrix m1, Matrix m2)
             {
-                return m1.Determinant() >= m2.Determinant();
+                return m1.Determinant >= m2.Determinant;
             }
-            
+
             public static bool operator <=(Matrix m1, Matrix m2)
             {
-                return m1.Determinant() <= m2.Determinant();
+                return m1.Determinant <= m2.Determinant;
             }
-            
+
             public static bool operator ==(Matrix m1, Matrix m2)
             {
                 return m1.matrix == m2.matrix;
             }
-            
+
             public static bool operator !=(Matrix m1, Matrix m2)
             {
                 return m1.matrix != m2.matrix;
             }
-            
+
             public static Matrix operator *(Matrix m1, Matrix m2)
             {
 
-                Matrix matrix = new Matrix(new double[2,2]);
+                Matrix matrix = new Matrix(new double[2, 2]);
 
                 for (var i = 0; i < 2; i++)
                 {
@@ -285,7 +276,7 @@ namespace ConsoleApp2
 
                 return matrix;
             }
-            
+
             public int CompareTo(Matrix compareParMatrix)
             {
                 // A null value means that this object is greater.
@@ -293,15 +284,15 @@ namespace ConsoleApp2
                     return 1;
 
                 else
-                    return this.Determinant().CompareTo(compareParMatrix.Determinant());
+                    return this.Determinant.CompareTo(compareParMatrix.Determinant);
             }
-            
-            
-            
+
+
+
             public static Matrix operator /(Matrix m1, Matrix m2)
             {
 
-                Matrix matrix = new Matrix(new double[2,2]);
+                Matrix matrix = new Matrix(new double[2, 2]);
                 Matrix inverse_matrix = m2.InverseMatrix();
 
                 for (var i = 0; i < 2; i++)
@@ -320,81 +311,135 @@ namespace ConsoleApp2
             
 
 
-
-
-
-
-
         }
-        class ListOfMatrix : List<Matrix>
+
+        class ListOfMatrix
         {
-            public void Sort()
+            private List<Matrix> list;
+            public int Count = 0;
+            public bool IsSorted = false;
+
+            public ListOfMatrix()
             {
-                this.Sort(delegate(Matrix x, Matrix y)
-                {
-                    if (x.Determinant() == null && x.Determinant() == null) return 0;
-                    else if (x.Determinant() == null) return -1;
-                    else if (y.Determinant() == null) return 1;
-                    else return x.Determinant().CompareTo(y.Determinant());
-                });
+                this.list = new List<Matrix>();
             }
             
-            public Matrix Max()
+            public Matrix this[int index]
             {
-                Matrix max = this[0];
-                foreach (var matrix in this)
+                get
                 {
-                    if (matrix.Determinant() > max.Determinant())
+                    if (index < list.Count && index >= 0)
                     {
-                        max = matrix;
+                        return list[index];
+                    }
+                    else
+                    {
+                        throw new Exception("Index out of range!");
+                    }
+
+                }
+                set
+                {
+                    if (index < list.Count && list.Count >= 0)
+                    {
+                        list[index] = value;
+                    }
+                    else
+                    {
+                        throw new Exception("Index out of range!");
                     }
                 }
+            }
 
-                return max;
+            public void Sort()
+            {
+                if (this.IsSorted)
+                {
+                    return;
+                }
+                this.IsSorted = true;
+                list.Sort(delegate(Matrix matrix, Matrix matrix1)
+                {
+                    return matrix.Determinant.CompareTo(matrix1.Determinant);
+                });
+            }
+
+            public Matrix Last()
+            {
+                return list.Last();
+            }
+
+            public Matrix First()
+            {
+                return list.First();
+            }
+
+            public Matrix Max()
+            {
+                Matrix ans = list[0];
+                foreach (Matrix matrix in this.list)
+                {
+                    if (matrix.Determinant > ans.Determinant)
+                    {
+                        ans = matrix;
+                    }
+                    
+                }
+
+                return ans;
             }
             
             public Matrix Min()
             {
-                Matrix min = this[0];
-                foreach (var matrix in this)
+                Matrix ans = list[0];
+                foreach (Matrix matrix in this.list)
                 {
-                    if (matrix.Determinant() < min.Determinant())
+                    if (matrix.Determinant < ans.Determinant)
                     {
-                        min = matrix;
+                        ans = matrix;
                     }
+                    
                 }
 
-                return min;
+                return ans;
             }
 
+            public void Add(Matrix matrix)
+            {
+                this.IsSorted = false;
+                this.list.Add(matrix);
+                this.Count++;
+            }
+            
             public Matrix[] ToArray()
             {
-                Matrix[] array = new Matrix[this.Count];
-                for (int i = 0; i < this.Count; i++)
+                Matrix[] arr = new Matrix[this.list.Count];
+                for (int i = 0; i < this.list.Count; i++)
                 {
-                    array[i] = this[i];
+                    arr[i] = this.list[i];
                 }
 
-                return array;
+                return arr;
             }
-
-            public string[] ToString()
+            
+            public string[] ToStringArray()
             {
-                string[] array = new string[this.Count];
-                for (int i = 0; i < this.Count; i++)
+                string[] arr = new string[this.list.Count];
+                for (int i = 0; i < this.list.Count; i++)
                 {
-                    array[i] = this[i].ToString();
+                    arr[i] = this.list[i].ToString();
                 }
 
-                return array;
-
+                return arr;
             }
-
-
+            
 
 
         }
         
+
+
+
         static class MatrixInOut
         {
             public static ListOfMatrix ReadMatrixFromFile(string path)
@@ -403,8 +448,8 @@ namespace ConsoleApp2
                 {
                     using (StreamReader sr = new StreamReader(path))
                     {
-                        string data = sr.ReadToEnd();
-                        string[] arr = data.Split("\n\n");
+                        string data = sr.ReadToEnd().Trim('\n', '-');
+                        string[] arr = data.Split("\n+\n");
                         ListOfMatrix list = new ListOfMatrix();
                         foreach (string matrix in arr)
                         {
@@ -428,7 +473,19 @@ namespace ConsoleApp2
                 {
                     using (StreamWriter sw = new StreamWriter(path, false, System.Text.Encoding.Default))
                     {
-                        sw.WriteLine(list.ToString());
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            sw.WriteLine(list[i].ToString());
+                            if (i != list.Count - 1)
+                            {
+                                sw.WriteLine('+');
+                            }
+                            else
+                            {
+                                sw.WriteLine('-');
+                            }
+                        }
+                       
                         return true;
                     }
                 }
@@ -445,13 +502,12 @@ namespace ConsoleApp2
         static ListOfMatrix Action(ListOfMatrix list, int n)
         {
             ListOfMatrix res = new ListOfMatrix();
-            foreach (Matrix matrix in list)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (matrix.Determinant() < n)
+                if (list[i].Determinant < n)
                 {
-                    res.Add(matrix);
+                    res.Add(list[i]);
                 }
-                
             }
 
             return res;
@@ -508,7 +564,7 @@ namespace ConsoleApp2
             }
             else if (MethodIn == 1)
             {
-                Console.WriteLine("Ведите матрицы:");
+                Console.WriteLine("Ведите матрицы разделяя матрицы знаком +, в конце введите на отдельной строчке знак -:");
                 StringBuilder sb = new StringBuilder();
                 string line = "";
                 do
@@ -516,17 +572,24 @@ namespace ConsoleApp2
                     line = Console.ReadLine();
                     sb.AppendLine(line);
                 } while (line != "-");
-                string[] arr = sb.ToString().Split("\n+\n");
+
+                string data = sb.ToString().Trim('\n', '-');
+                string[] arr = data.Split("\n+\n");
                 foreach (string matrix in arr)
                 {
-                    list.Add(Matrix.Parse(matrix));
+                    Matrix res = Matrix.Parse(matrix);
+                    list.Add(res);
                 }
 
                 list = Action(list, n);
                 list.Sort();
                 if (MethodOut == 1)
                 {
-                    Console.WriteLine(list.ToString());
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        Console.WriteLine(list[i]);
+                        Console.WriteLine("-------");
+                    }
                 }
                 else if (MethodOut == 2)
                 {
